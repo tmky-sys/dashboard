@@ -1,6 +1,6 @@
 const dashboardData = {
   date: "2026年4月1日（水）",
-  updated_at: "7:30 更新",
+  updated_at: "6:00 更新",
 
   markets: [
     { name: "S&P500",       value: "6,403",   change: "−0.1%",  up: false },
