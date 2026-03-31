@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>かよさんの朝のダッシュボード</title>
+  <script src="data.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+      background: #f0f4f8;
+      color: #2d3748;
+    }
+
+    /* ヘッダー */
+    header {
+      background: linear-gradient(150deg, #1a365d 0%, #2b6cb0 60%, #4299e1 100%);
+      color: white;
+      padding: 28px 20px 24px;
+    }
+    header .greeting {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      opacity: 0.75;
+      margin-bottom: 6px;
+    }
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    header .updated {
+      font-size: 11px;
+      opacity: 0.6;
+    }
+
+    main {
+      padding: 16px;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* カード共通 */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #a0aec0;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    /* 天気 */
+    .weather-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .weather-icon { font-size: 44px; line-height: 1; }
+    .weather-main { flex: 1; }
+    .weather-condition { font-size: 16px; font-weight: 600; color: #2d3748; margin-bottom: 4px; }
+    .weather-temps { font-size: 13px; color: #718096; }
+    .weather-temps span { font-weight: 700; }
+    .weather-temps .high { color: #e53e3e; }
+    .weather-temps .low  { color: #4299e1; }
+
+    /* 市場 */
+    .market-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .market-item {
+      background: #f7fafc;
+      border-radius: 10px;
+      padding: 11px 12px;
+    }
+    .market-item.wide { grid-column: span 2; }
+    .market-name  { font-size: 11px; color: #a0aec0; margin-bottom: 3px; }
+    .market-value { font-size: 19px; font-weight: 700; color: #1a202c; }
+    .market-change { font-size: 12px; font-weight: 600; margin-top: 2px; }
+    .up   { color: #38a169; }
+    .down { color: #e53e3e; }
+
+    /* 今日のアクション */
+    .action-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f4f8;
+    }
+    .action-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .action-item:first-child { padding-top: 0; }
+    .action-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .action-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #2d3748;
+    }
+    .action-body {
+      font-size: 12px;
+      color: #718096;
+      line-height: 1.65;
+    }
+
+    /* 40代の資産運用 */
+    .advice-card {
+      background: linear-gradient(135deg, #fffaf0, #fef3c7);
+      border-left: 4px solid #f6ad55;
+    }
+    .advice-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #744210;
+      margin-bottom: 8px;
+    }
+    .advice-body {
+      font-size: 13px;
+      color: #7b5828;
+      line-height: 1.75;
+    }
+
+    /* ニュース */
+    .news-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f4f8;
+    }
+    .news-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .news-item:first-child { padding-top: 0; }
+    .news-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      color: #4299e1;
+      background: #ebf8ff;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+    .news-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; line-height: 1.4; }
+    .news-body  { font-size: 12px; color: #718096; line-height: 1.7; margin-bottom: 8px; }
+    .news-point {
+      font-size: 12px;
+      color: #2b6cb0;
+      background: #ebf8ff;
+      border-radius: 8px;
+      padding: 8px 10px;
+      line-height: 1.65;
+    }
+
+    /* 今日の一言 */
+    .message-card {
+      background: linear-gradient(135deg, #f0fff4, #ebf8ff);
+      border-left: 4px solid #68d391;
+    }
+    .message-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #2f855a;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 11px;
+      color: #a0aec0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="greeting">おはようございます、かよさん</div>
+  <h1 id="header-date"></h1>
+  <div class="updated" id="header-updated"></div>
+</header>
+
+<main>
+
+  <!-- 天気 -->
+  <div class="card">
+    <div class="card-title">🌤 高崎市の今日の天気</div>
+    <div class="weather-row">
+      <div class="weather-icon" id="weather-icon">…</div>
+      <div class="weather-main">
+        <div class="weather-condition" id="weather-condition">取得中...</div>
+        <div class="weather-temps">
+          最高 <span class="high" id="weather-high">--</span>℃
+          最低 <span class="low"  id="weather-low">--</span>℃
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 市場 -->
+  <div class="card">
+    <div class="card-title">📈 今日の市場</div>
+    <div class="market-grid" id="market-grid"></div>
+  </div>
+
+  <!-- 今日のアクション -->
+  <div class="card">
+    <div class="card-title">🌅 今日やってみよう</div>
+    <div id="action-list"></div>
+  </div>
+
+  <!-- 40代の資産運用 -->
+  <div class="card advice-card">
+    <div class="advice-title" id="advice-title"></div>
+    <div class="advice-body" id="advice-body"></div>
+  </div>
+
+  <!-- ニュース -->
+  <div class="card">
+    <div class="card-title">📰 今日のニュース</div>
+    <div id="news-list"></div>
+  </div>
+
+  <!-- 今日の一言 -->
+  <div class="card message-card">
+    <div class="card-title">💡 今日の一言</div>
+    <div class="message-text" id="daily-message"></div>
+  </div>
+
+</main>
+
+<footer>毎朝 7:30 に自動更新されます</footer>
+
+<script>
+  const d = dashboardData;
+
+  document.getElementById("header-date").textContent = d.date;
+  document.getElementById("header-updated").textContent = d.updated_at;
+
+  // 市場
+  d.markets.forEach((m, i) => {
+    const div = document.createElement("div");
+    const isOdd = d.markets.length % 2 !== 0;
+    const isLast = i === d.markets.length - 1;
+    div.className = "market-item" + (isOdd && isLast ? " wide" : "");
+    div.innerHTML = `
+      <div class="market-name">${m.name}</div>
+      <div class="market-value">${m.value}</div>
+      <div class="market-change ${m.up ? 'up' : 'down'}">${m.change}</div>
+    `;
+    document.getElementById("market-grid").appendChild(div);
+  });
+
+  // アクション
+  const actionList = document.getElementById("action-list");
+  d.actions.forEach(a => {
+    const div = document.createElement("div");
+    div.className = "action-item";
+    div.innerHTML = `
+      <div class="action-icon">${a.icon}</div>
+      <div>
+        <div class="action-title">${a.title}</div>
+        <div class="action-body">${a.body}</div>
+      </div>
+    `;
+    actionList.appendChild(div);
+  });
+
+  // 40代アドバイス
+  document.getElementById("advice-title").textContent = d.asset_advice.title;
+  document.getElementById("advice-body").textContent = d.asset_advice.body;
+
+  // ニュース
+  d.news.forEach(n => {
+    const div = document.createElement("div");
+    div.className = "news-item";
+    div.innerHTML = `
+      <div class="news-tag">${n.tag}</div>
+      <div class="news-title">${n.title}</div>
+      <div class="news-body">${n.body}</div>
+      <div class="news-point">${n.point}</div>
+    `;
+    document.getElementById("news-list").appendChild(div);
+  });
+
+  // 今日の一言
+  document.getElementById("daily-message").textContent = d.daily_message;
+
+  // 天気（高崎市）Open-Meteo API — 無料・APIキー不要
+  const TAKASAKI_LAT = 36.3219;
+  const TAKASAKI_LON = 139.0035;
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${TAKASAKI_LAT}&longitude=${TAKASAKI_LON}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1`)
+    .then(r => r.json())
+    .then(data => {
+      const code = data.daily.weathercode[0];
+      const high = Math.round(data.daily.temperature_2m_max[0]);
+      const low  = Math.round(data.daily.temperature_2m_min[0]);
+
+      const weatherMap = {
+        0:  ["☀️", "快晴"],
+        1:  ["🌤", "晴れ"],
+        2:  ["⛅️", "晴れ時々曇り"],
+        3:  ["☁️", "曇り"],
+        45: ["🌫", "霧"],
+        48: ["🌫", "霧"],
+        51: ["🌦", "小雨"],
+        53: ["🌧", "雨"],
+        55: ["🌧", "強い雨"],
+        61: ["🌦", "小雨"],
+        63: ["🌧", "雨"],
+        65: ["🌧", "強い雨"],
+        71: ["🌨", "小雪"],
+        73: ["❄️", "雪"],
+        75: ["❄️", "大雪"],
+        80: ["🌦", "にわか雨"],
+        81: ["🌧", "にわか雨（強め）"],
+        82: ["⛈", "激しいにわか雨"],
+        95: ["⛈", "雷雨"],
+        99: ["⛈", "雷雨（強め）"],
+      };
+      const [icon, condition] = weatherMap[code] ?? ["🌡", "不明"];
+
+      document.getElementById("weather-icon").textContent = icon;
+      document.getElementById("weather-condition").textContent = condition;
+      document.getElementById("weather-high").textContent = high;
+      document.getElementById("weather-low").textContent  = low;
+    })
+    .catch(() => {
+      document.getElementById("weather-condition").textContent = "取得できませんでした";
+    });
+</script>
+
+</body>
+</html>
