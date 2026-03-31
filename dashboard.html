@@ -227,6 +227,12 @@
     <div class="advice-body" id="advice-body"></div>
   </div>
 
+  <!-- 朝の必須ニュース -->
+  <div class="card">
+    <div class="card-title">⚡ 朝の必須ニュース</div>
+    <ul id="headlines-list" style="padding-left:18px; margin:0;"></ul>
+  </div>
+
   <!-- ニュース -->
   <div class="card">
     <div class="card-title">📰 今日のニュース</div>
@@ -293,6 +299,15 @@
       <div class="news-point">${n.point}</div>
     `;
     document.getElementById("news-list").appendChild(div);
+  });
+
+  // 朝の必須ニュース
+  const headlinesList = document.getElementById("headlines-list");
+  d.morning_headlines.forEach(h => {
+    const li = document.createElement("li");
+    li.style.cssText = "font-size:13px; color:#2d3748; line-height:1.8; padding:2px 0;";
+    li.textContent = h;
+    headlinesList.appendChild(li);
   });
 
   // 今日の一言
